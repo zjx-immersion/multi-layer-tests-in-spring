@@ -1,6 +1,8 @@
 package com.tw.apistackbase.api.customer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tw.apistackbase.api.customer.response.ResourceWithUrl;
 import com.tw.apistackbase.domian.address.model.Address;
 import com.tw.apistackbase.domian.customer.model.Customer;
 import com.tw.apistackbase.dto.AddressDto;
@@ -25,6 +27,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -172,13 +175,24 @@ public class CustomerResourceTest {
         ResultActions result = mvc.perform
                 (get("/customers/{0}/addresses", customerId));
 
+
         //then
-        result.andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$", hasSize(2)))
+        ResultActions resultActions = result.andExpect(status().isOk())
+                .andDo(print());
+
+        resultActions.andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].content.id", is(1)))
                 .andExpect(jsonPath("$[1].content.id", is(2)))
                 .andExpect(jsonPath("$[*].content.city", containsInAnyOrder("Chengdu", "Zhuhai")));
+
+        List<ResourceWithUrl<AddressDto>> getedAddressDtos = mapper.readValue(resultActions.andReturn().getResponse().getContentAsString(),
+                new TypeReference<List<ResourceWithUrl<AddressDto>>>() {
+        });
+
+
+        assertEquals(2, getedAddressDtos.size());
+        assertEquals(new Long(1), getedAddressDtos.get(0).getContent().getId());
+
     }
 
     @Test
