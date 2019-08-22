@@ -16,3 +16,4 @@ CREATE TABLE customer_address (
     FOREIGN KEY (address_id) REFERENCES address (id),
     UNIQUE INDEX customer_address_idx_1 (customer_id, address_id)
 );
+

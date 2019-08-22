@@ -19,5 +19,3 @@ INSERT INTO customer_address (customer_id, address_id) VALUES (6, 2);
 INSERT INTO customer_address (customer_id, address_id) VALUES (7, 3);
 
 
-
-
